@@ -1,5 +1,5 @@
 import requests
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseNotFound, Http404
 
 # Create your views here.
@@ -19,13 +19,19 @@ def components(request, components):
 
 def archive(requests, year):
     if int(year) > 2020:
-        raise Http404()
-        # handler 404 - Page not found
-        # handler 500 - Server Error
-        # handler 403 - Limited access
-        # handler 400 - Can't process the request
-
+        return redirect('home', permanent=True)
     return HttpResponse(f"<h1>The Page of Year</h1><p>{year}</p>")
+
+# Return error page not found
+# def archive(requests, year):
+#     if int(year) > 2020:
+#         raise Http404()
+#         # handler 404 - Page not found
+#         # handler 500 - Server Error
+#         # handler 403 - Limited access
+#         # handler 400 - Can't process the request
+
+#     return HttpResponse(f"<h1>The Page of Year</h1><p>{year}</p>")
 
 def pageNotFound(request, exception):
     return HttpResponseNotFound("<h1>The Page Is Not Found<h1>")

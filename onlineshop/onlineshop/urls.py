@@ -21,15 +21,24 @@ Can be different type of data:
     uuid - latin numbers
     path - str with symbol "/"
 """
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
+from onlineshop import settings
 from PC.views import *
 
 # Here we are adding the path of our website, like first you're adding 'link pat/', after that adding the method/class
 urlpatterns = [
     path('admin/', admin.site.urls), #http:127.0.0.1:8000/admin/
     path('PC/', include('PC.urls')), #http:127.0.0.1:8000/PC/...
-    path('', my_show), #http:127.0.0.1:8000/
+    # path('', my_show), #http:127.0.0.1:8000/
 ]
 
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root= settings.MEDIA_ROOT)
+
 handler404 = pageNotFound
+# handler 404 - Page not found
+# handler 500 - Server Error
+# handler 403 - Limited access
+# handler 400 - Can't process the request
