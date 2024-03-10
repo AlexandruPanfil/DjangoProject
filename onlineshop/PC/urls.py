@@ -12,8 +12,9 @@ from .views import *
 
 urlpatterns = [
     path('components/<int:components>/', components),  #http:127.0.0.1:8000/PC/components/<components-id>
-    path('', my_show, name='home'),  #http:127.0.0.1:8000/PC/
-    re_path(r'^archive/(?P<year>[0-9]{4})/', archive) #http:127.0.0.1:8000/PC/archive/{year}
+    path('', index, name='home'),  #http:127.0.0.1:8000/PC/
+    re_path(r'^archive/(?P<year>[0-9]{4})/', archive), #http:127.0.0.1:8000/PC/archive/{year}
+    path('about/', about, name='about'),  #http:127.0.0.1:8000/PC/about/
 ]
 
 

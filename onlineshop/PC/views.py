@@ -2,13 +2,18 @@ import requests
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseNotFound, Http404
 
+from .models import *
+
 # Create your views here.
 
-def index(requests):
-    return HttpResponse("<h1>The page of PC<h1>")
+menu = ["About Site", "Add Info", "Feedback", "Enter"]
 
-def my_show(requests):
-    return HttpResponse("<h1>The Main Page<h1>")
+def index(requests):
+    posts = PC.objects.all()
+    return render(requests, 'PC/index.html', {'posts':posts, 'menu': menu, "Title": "Main Page"})
+
+def about(requests):
+    return render(requests, 'PC/about.html', {"menu": menu, "Title": "About Site"})
 
 def components(request, components):
     if (request.GET):    #If we have GET Request from the client print GET Request

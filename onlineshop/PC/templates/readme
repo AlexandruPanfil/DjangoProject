@@ -1,0 +1,4 @@
+Important:
+In this folder Templates is template of html models,
+Main issue is that this directory is main for all apps (if will be on the same projects) and to not have problems
+with the same name files was agreed to make subfolders for each program
