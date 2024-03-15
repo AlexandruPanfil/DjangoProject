@@ -30,8 +30,8 @@ from PC.views import *
 # Here we are adding the path of our website, like first you're adding 'link pat/', after that adding the method/class
 urlpatterns = [
     path('admin/', admin.site.urls), #http:127.0.0.1:8000/admin/
-    path('PC/', include('PC.urls')), #http:127.0.0.1:8000/PC/...
-    path('', index), #http:127.0.0.1:8000/
+    path('', include('PC.urls')), #http:127.0.0.1:8000/PC/...
+    #path('', index), #http:127.0.0.1:8000/
 ]
 
 if settings.DEBUG:
