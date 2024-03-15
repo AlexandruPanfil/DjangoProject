@@ -6,14 +6,39 @@ from .models import *
 
 # Create your views here.
 
-menu = ["About Site", "Add Info", "Feedback", "Enter"]
+menu = [{'title': "About Site", 'url_name': 'about'},
+        {'title': "Add Info", 'url_name': 'add_page'},
+        {'title': "Feedback", 'url_name': 'contact'},
+        {'title': "Enter", 'url_name': 'login'}]
 
 def index(requests):
     posts = PC.objects.all()
-    return render(requests, 'PC/index.html', {'posts':posts, 'menu': menu, "Title": "Main Page"})
+    context = {'posts':posts, 'menu': menu, "title": "Main Page"}
+    return render(requests, 'PC/index.html', context=context)
 
 def about(requests):
-    return render(requests, 'PC/about.html', {"menu": menu, "Title": "About Site"})
+    context = {"menu": menu, "title": "About Site"}
+    return render(requests, 'PC/about.html', context=context)
+
+def addpage(requests):
+    return HttpResponse(f"<h1>The Add Page</h1>")
+
+def contact(requests):
+    return HttpResponse(f"<h1>The Contact Page</h1>")
+
+def login(requests):
+    return HttpResponse(f"<h1>The Login Page</h1>")
+
+
+
+
+
+
+
+
+
+
+
 
 def components(request, components):
     if (request.GET):    #If we have GET Request from the client print GET Request
