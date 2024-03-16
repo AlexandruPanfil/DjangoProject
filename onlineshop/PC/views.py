@@ -13,7 +13,8 @@ menu = [{'title': "About Site", 'url_name': 'about'},
 
 def index(requests):
     posts = PC.objects.all()
-    context = {'posts':posts, 'menu': menu, "title": "Main Page"}
+    cats = Category.objects.all()
+    context = {'posts':posts, 'menu': menu, "title": "Main Page", 'cats': cats, 'cat_selected': 0, }
     return render(requests, 'PC/index.html', context=context)
 
 def about(requests):
@@ -29,15 +30,18 @@ def contact(requests):
 def login(requests):
     return HttpResponse(f"<h1>The Login Page</h1>")
 
+def show_post(requests, post_id):
+    return HttpResponse(f"Showing post id = {post_id}")
 
+def show_category(requests, cat_id):
+    posts = PC.objects.filter(cat_id=cat_id)
+    cats = Category.objects.all()
 
+    if len(posts) == 0:
+        raise Http404()
 
-
-
-
-
-
-
+    context = {'posts': posts, 'menu': menu, "title": "Show By category", 'cats': cats, 'cat_selected': 0, }
+    return render(requests, 'PC/index.html', context=context)
 
 
 def components(request, components):
