@@ -1,4 +1,5 @@
 {% load static %}
+{% load pc_tags %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -32,24 +33,19 @@
 <tr>
 <!-- Sidebar слева -->
 	<td valign="top" class="left-chapters">
+		{% getcats as categories %}
 	<ul id="leftchapters">
-		{% if cat_selected == 0 %}
-			<li class="selected">All Categories</li>
-		{% else %}
-			<li><a href="{% url 'home' %}">All Categories</a></li>
-		{% endif %}
+{% if cat_selected == 0 %}
+		<li class="selected">All Categories</li>
+{% else %}
+		<li><a href="{% url 'home' %}">All Categories</a></li>
+{% endif %}
 
-		{% for c in cats %}
-			{% if c.pk == cat_selected %}
-		<li class="selected">{{ c.name }}</li>
-			{% else %}
-		<li><a href="{{ c.get_absolute_url }}">{{ c.name }}</a></li>
-			{% endif %}
-		{% endfor %}
+		{% show_categories cat_selected=cat_selected %}
 
 		<li class="share">
 		<p>Our Channel</p>
-		<a class="share-yt" href="https://www.youtube.com/@hael_music" target="_blank" rel="nofollow"></a>
+		<a class="share-yt" href="https://www.youtube.com/" target="_blank" rel="nofollow"></a>
 		</li>
 	</ul>
 </td>
@@ -71,7 +67,7 @@
 <!-- Footer -->
 <tr><td valign=top>
 	<div id="footer">
-		<p>&copy; 2021 Partial or complete copying of information from this site for distribution on other resources, including paper, is strictly prohibited.</p>
+		<p>&copy; 2021 Частичное или полное копирование информации с данного сайта для распространения на других ресурсах, в том числе и бумажных, строго запрещено.</p>
 	</div>
 </td></tr></table>
 <!-- Конец footer'а и страницы -->

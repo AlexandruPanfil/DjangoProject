@@ -15,12 +15,13 @@ class PC(models.Model):
     #it's cat_id (category id) and _id is added by Django
     #why 'Category' and not simple Category, bcz Django will understand where to be forwarded without
     #moving all code below
+    slug = models.SlugField(max_length=255, unique=True, db_index=True, verbose_name="URL")
 
     def __str__(self):
         return self.title
 
     def get_absolute_url(self):
-        return reverse('post', kwargs={'post_id':self.pk})
+        return reverse('post', kwargs={'post_slug':self.slug})
 
     class Meta:
         # This class is showing the data in admin pannel and some of them in our site
@@ -31,6 +32,7 @@ class PC(models.Model):
 class Category(models.Model):
     name = models.CharField(max_length=120, db_index=True)
     # db_index -> means that this field will be indexed
+    slug = models.SlugField(max_length=255, unique=True, db_index=True, verbose_name="URL")
 
     def __str__(self):
         return self.name
