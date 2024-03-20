@@ -2,6 +2,7 @@ import requests
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, HttpResponseNotFound, Http404
 
+from .forms import *
 from .models import *
 
 # Create your views here.
@@ -15,7 +16,8 @@ menu = [{'title': "About Site", 'url_name': 'about'},
 def index(requests):
     posts = PC.objects.all()
 
-    context = {'posts':posts, 'menu': menu, "title": "Main Page", 'cat_selected': 0, }
+    context = {'posts': posts, 'menu': menu, "title": "Main Page", 'cat_selected': 0, }
+
     return render(requests, 'PC/index.html', context=context)
 
 
@@ -25,7 +27,15 @@ def about(requests):
 
 
 def addpage(requests):
-    return HttpResponse(f"<h1>The Add Page</h1>")
+    if requests.method == 'POST':
+        form = AddPostForm(requests.POST, requests.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+
+    else:
+        form = AddPostForm()
+    return render(requests, 'pc/addpage.html', {'form': form, 'menu': menu, 'title': 'Adding a new post'})
 
 
 def contact(requests):

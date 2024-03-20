@@ -11,7 +11,7 @@ class PC(models.Model):
     time_created = models.DateTimeField(auto_now_add=True)
     time_update = models.DateTimeField(auto_now=True)
     is_published = models.BooleanField(default=True)
-    cat = models.ForeignKey('Category', on_delete=models.PROTECT, null=True)
+    cat = models.ForeignKey('Category', on_delete=models.PROTECT, null=True, verbose_name="Category")
     #it's cat_id (category id) and _id is added by Django
     #why 'Category' and not simple Category, bcz Django will understand where to be forwarded without
     #moving all code below
@@ -39,6 +39,7 @@ class Category(models.Model):
 
     def get_absolute_url(self):
         return reverse('category', kwargs={'cat_id': self.pk})
+        # return reverse('category', kwargs={'cat_slug': self.slug})
 
     class Meta:
         verbose_name = "Category"
