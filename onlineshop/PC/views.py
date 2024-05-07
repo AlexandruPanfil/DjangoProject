@@ -1,4 +1,5 @@
 import requests
+from django.core.paginator import Paginator
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, HttpResponseNotFound, Http404
 from django.urls import reverse_lazy
@@ -6,15 +7,14 @@ from django.views.generic import ListView, DetailView, CreateView
 
 from .forms import *
 from .models import *
+from .utils import *
 
 # Create your views here.
 
-menu = [{'title': "About Site", 'url_name': 'about'},
-        {'title': "Add Info", 'url_name': 'add_page'},
-        {'title': "Feedback", 'url_name': 'contact'},
-        {'title': "Enter", 'url_name': 'login'}]
 
-class PCHome(ListView):
+
+class PCHome(DataMixin, ListView):   # DataMixin will be first because it will be as main contructor
+    # paginate_by = 3  # This is pagination for the posts on the site, and it's already done in pagination to not make DRY
     model = PC
     template_name = 'PC/index.html'   # if to not give this link so we will have a error, bcz django is looking for {app}/{model_name}_list.html
     context_object_name = 'posts'    # object_list is variable in html file, but in django class is context_object_name
@@ -22,10 +22,12 @@ class PCHome(ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)   # we are calling super() to not loose the existing data, just to add more
-        context['menu'] = menu
-        context['title'] = "Main Page"
-        context['cat_selected'] = 0
-        return context
+        c_def = self.get_user_context(title="Main Page")
+        # Old model of showing context of site, and it is doubeling everywhere
+        # context['menu'] = menu
+        # context['title'] = "Main Page"
+        # context['cat_selected'] = 0
+        return dict(list(context.items()) + list(c_def.items()))
 
     def get_queryset(self):
         return PC.objects.filter(is_published=True)
@@ -40,6 +42,12 @@ class PCHome(ListView):
 
 
 def about(requests):
+    # for def the Paginator have more code
+    # contact_list = PC.objects.all()
+    # paginator = Paginator(contact_list, 3)
+    # page_number = requests.GET.get('page')
+    # page_obj = paginator.get_page(page_number)
+
     context = {"menu": menu, "title": "About Site"}
     return render(requests, 'PC/about.html', context=context)
 
@@ -56,7 +64,7 @@ def about(requests):
 #     return render(requests, 'pc/addpage.html', {'form': form, 'menu': menu, 'title': 'Adding a new post'})
 
 
-class AddPage(CreateView):
+class AddPage(DataMixin, CreateView):
     # model = PC   # here already is not model, here is form that we created to get data from add_page
     form_class = AddPostForm
     template_name = 'PC/addpage.html'
@@ -64,9 +72,10 @@ class AddPage(CreateView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)   # we are calling super() to not loose the existing data, just to add more
-        context['menu'] = menu
-        context['title'] = 'Add Post'
-        return context
+        c_def = self.get_user_context(title="Add Post")
+        # context['menu'] = menu
+        # context['title'] = 'Add Post'
+        return dict(list(context.items()) + list(c_def.items()))
 
 
 
@@ -85,7 +94,7 @@ def login(requests):
 #
 #     return render(requests, 'PC/post.html', context=context)
 
-class ShowPost(DetailView):
+class ShowPost(DataMixin, DetailView):
     model = PC
     template_name = 'PC/post.html'
     slug_url_kwarg = 'post_slug'  # if not will be this variable we should call the post via pk or slug, but we want via 'post_slug' to not change everywhere
@@ -94,10 +103,11 @@ class ShowPost(DetailView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)   # we are calling super() to not loose the existing data, just to add more
-        context['menu'] = menu
-        context['title'] = context['post']
-        context['cat_selected'] = 0
-        return context
+        c_def = self.get_user_context(title=context['post'])
+        # context['menu'] = menu
+        # context['title'] = context['post']
+        # context['cat_selected'] = 0
+        return dict(list(context.items()) + list(c_def.items()))
 
 # def show_category(requests, cat_id):
 #     posts = PC.objects.filter(cat_id=cat_id)
@@ -108,18 +118,19 @@ class ShowPost(DetailView):
 #     context = {'posts': posts, 'menu': menu, "title": "Show By category", 'cat_selected': cat_id, }
 #     return render(requests, 'PC/index.html', context=context)
 
-class PCCategory(ListView):
+class PCCategory(DataMixin, ListView):
     model = PC
     template_name = 'PC/index.html'
     context_object_name = 'posts'
     allow_empty = False
 
     def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data(**kwargs)   # we are calling super() to not loose the existing data, just to add more
-        context['menu'] = menu
-        context['title'] = "Category - " + str(context['posts'][0].cat)
-        context['cat_selected'] = context['posts'][0].cat_id
-        return context
+        context = super().get_context_data(**kwargs)  # We are calling super() to not loose the existing data, just to add more
+        c_def = self.get_user_context(title=f"Category - {str(context['posts'][0].cat)}", cat_selected=context['posts'][0].cat_id)
+        # context['menu'] = menu
+        # context['title'] = "Category - " + str(context['posts'][0].cat)
+        # context['cat_selected'] = context['posts'][0].cat_id
+        return dict(list(context.items()) + list(c_def.items()))
 
     def get_queryset(self):
         return PC.objects.filter(cat__slug=self.kwargs['cat_slug'], is_published=True)
