@@ -1,4 +1,5 @@
 import requests
+from django.contrib.auth.forms import UserCreationForm
 from django.core.paginator import Paginator
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, HttpResponseNotFound, Http404
@@ -41,15 +42,6 @@ class PCHome(DataMixin, ListView):   # DataMixin will be first because it will b
 #     return render(requests, 'PC/index.html', context=context)
 
 
-def about(requests):
-    # for def the Paginator have more code
-    # contact_list = PC.objects.all()
-    # paginator = Paginator(contact_list, 3)
-    # page_number = requests.GET.get('page')
-    # page_obj = paginator.get_page(page_number)
-
-    context = {"menu": menu, "title": "About Site"}
-    return render(requests, 'PC/about.html', context=context)
 
 
 # def addpage(requests):
@@ -78,13 +70,48 @@ class AddPage(DataMixin, CreateView):
         return dict(list(context.items()) + list(c_def.items()))
 
 
+def about(requests):
+    # for def the Paginator have more code
+    # contact_list = PC.objects.all()
+    # paginator = Paginator(contact_list, 3)
+    # page_number = requests.GET.get('page')
+    # page_obj = paginator.get_page(page_number)
+
+    context = {"menu": menu, "title": "About Site"}
+    return render(requests, 'PC/about.html', context=context)
 
 def contact(requests):
     return HttpResponse(f"<h1>The Contact Page</h1>")
 
+class PCCategory(DataMixin, ListView):
+    model = PC
+    template_name = 'PC/index.html'
+    context_object_name = 'posts'
+    allow_empty = False
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)  # We are calling super() to not loose the existing data, just to add more
+        c_def = self.get_user_context(title=f"Category - {str(context['posts'][0].cat)}", cat_selected=context['posts'][0].cat_id)
+        # context['menu'] = menu
+        # context['title'] = "Category - " + str(context['posts'][0].cat)
+        # context['cat_selected'] = context['posts'][0].cat_id
+        return dict(list(context.items()) + list(c_def.items()))
+
+    def get_queryset(self):
+        return PC.objects.filter(cat__slug=self.kwargs['cat_slug'], is_published=True)
 
 def login(requests):
     return HttpResponse(f"<h1>The Login Page</h1>")
+
+class Register(DataMixin, CreateView):
+    form_class = RegisterUserForm
+    template_name = 'pc/register.html'
+    success_url = reverse_lazy('login')
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)  # We are calling super() to not loose the existing data, just to add more
+        c_def = self.get_user_context(title=f"Register")
+        return dict(list(context.items()) + list(c_def.items()))
 
 
 # def show_post(requests, post_slug):

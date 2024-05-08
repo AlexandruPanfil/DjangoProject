@@ -18,6 +18,7 @@ urlpatterns = [
     path('add_page/', AddPage.as_view(), name='add_page'),   #http:127.0.0.1:8000/add_page/
     path('contact/', contact, name='contact'),   #http:127.0.0.1:8000/contact/
     path('login/', login, name='login'),    #http:127.0.0.1:8000/login/
+    path('register/', Register.as_view(), name='register'),
     path('post/<slug:post_slug>/', ShowPost.as_view(), name='post'),
     path('category/<slug:cat_slug>/', PCCategory.as_view(), name='category'),
     ]
