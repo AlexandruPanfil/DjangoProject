@@ -1,5 +1,7 @@
 import requests
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import logout, login
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.views import LoginView
 from django.core.paginator import Paginator
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, HttpResponseNotFound, Http404
@@ -31,7 +33,7 @@ class PCHome(DataMixin, ListView):   # DataMixin will be first because it will b
         return dict(list(context.items()) + list(c_def.items()))
 
     def get_queryset(self):
-        return PC.objects.filter(is_published=True)
+        return PC.objects.filter(is_published=True).select_related('cat')
 
 
 # def index(requests):
@@ -83,25 +85,24 @@ def about(requests):
 def contact(requests):
     return HttpResponse(f"<h1>The Contact Page</h1>")
 
-class PCCategory(DataMixin, ListView):
-    model = PC
-    template_name = 'PC/index.html'
-    context_object_name = 'posts'
-    allow_empty = False
+
+# def login(requests):
+#     return HttpResponse(f"<h1>The Login Page</h1>")
+
+
+class LoginUser(DataMixin, LoginView):
+    form_class = LoginUserForm
+    template_name = 'pc/login.html'
+    # success_url = reverse_lazy('home') # This method will not work here, we should define another function (get_success_url) to get another page after login
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)  # We are calling super() to not loose the existing data, just to add more
-        c_def = self.get_user_context(title=f"Category - {str(context['posts'][0].cat)}", cat_selected=context['posts'][0].cat_id)
-        # context['menu'] = menu
-        # context['title'] = "Category - " + str(context['posts'][0].cat)
-        # context['cat_selected'] = context['posts'][0].cat_id
+        c_def = self.get_user_context(title=f"Login")
         return dict(list(context.items()) + list(c_def.items()))
 
-    def get_queryset(self):
-        return PC.objects.filter(cat__slug=self.kwargs['cat_slug'], is_published=True)
+    def get_success_url(self):
+        return reverse_lazy('home')
 
-def login(requests):
-    return HttpResponse(f"<h1>The Login Page</h1>")
 
 class Register(DataMixin, CreateView):
     form_class = RegisterUserForm
@@ -112,6 +113,20 @@ class Register(DataMixin, CreateView):
         context = super().get_context_data(**kwargs)  # We are calling super() to not loose the existing data, just to add more
         c_def = self.get_user_context(title=f"Register")
         return dict(list(context.items()) + list(c_def.items()))
+
+    def form_valid(self, form): # this function is saving user login details from register and log the user after send it to home
+        user = form.save()
+        login(self.request, user)
+        return redirect('home')
+
+
+class LogoutUser(DataMixin, LoginView):
+    form_class = ...
+
+def logout_user(request):
+    logout(request)
+    return redirect('login')
+
 
 
 # def show_post(requests, post_slug):
@@ -151,16 +166,17 @@ class PCCategory(DataMixin, ListView):
     context_object_name = 'posts'
     allow_empty = False
 
+    def get_queryset(self):
+        return PC.objects.filter(cat__slug=self.kwargs['cat_slug'], is_published=True).select_related('cat')
+
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)  # We are calling super() to not loose the existing data, just to add more
-        c_def = self.get_user_context(title=f"Category - {str(context['posts'][0].cat)}", cat_selected=context['posts'][0].cat_id)
+        p = Category.objects.get(slug=self.kwargs['cat_slug'])
+        c_def = self.get_user_context(title=f"Category - {p.name}", cat_selected=p.pk)
         # context['menu'] = menu
         # context['title'] = "Category - " + str(context['posts'][0].cat)
         # context['cat_selected'] = context['posts'][0].cat_id
         return dict(list(context.items()) + list(c_def.items()))
-
-    def get_queryset(self):
-        return PC.objects.filter(cat__slug=self.kwargs['cat_slug'], is_published=True)
 
 
 

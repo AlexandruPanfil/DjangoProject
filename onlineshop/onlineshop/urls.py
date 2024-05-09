@@ -27,14 +27,21 @@ from django.urls import path, include
 from onlineshop import settings
 from PC.views import *
 
+
+
 # Here we are adding the path of our website, like first you're adding 'link pat/', after that adding the method/class
 urlpatterns = [
     path('admin/', admin.site.urls), #http:127.0.0.1:8000/admin/
     path('', include('PC.urls')), #http:127.0.0.1:8000/PC/...
     #path('', index), #http:127.0.0.1:8000/
-]
+    ]
 
 if settings.DEBUG:
+    import debug_toolbar
+
+    urlpatterns = [
+        path('__debug__/', include(debug_toolbar.urls)),
+    ] + urlpatterns
     urlpatterns += static(settings.MEDIA_URL, document_root= settings.MEDIA_ROOT)
 
 handler404 = pageNotFound
