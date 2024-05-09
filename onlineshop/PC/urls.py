@@ -17,7 +17,7 @@ urlpatterns = [
     #re_path(r'^archive/(?P<year>[0-9]{4})/', archive), #http:127.0.0.1:8000/archive/{year}
     path('about/', about, name='about'),  #http:127.0.0.1:8000/about/
     path('add_page/', AddPage.as_view(), name='add_page'),   #http:127.0.0.1:8000/add_page/
-    path('contact/', contact, name='contact'),   #http:127.0.0.1:8000/contact/
+    path('contact/', ContactFormView.as_view(), name='contact'),   #http:127.0.0.1:8000/contact/
     path('login/', LoginUser.as_view(), name='login'),    #http:127.0.0.1:8000/login/
     path('register/', Register.as_view(), name='register'),    #http:127.0.0.1:8000/register/
     path('logout/', logout_user, name='logout'),    #http:127.0.0.1:8000/logout/

@@ -21,6 +21,7 @@ Can be different type of data:
     uuid - latin numbers
     path - str with symbol "/"
 """
+import captcha
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
@@ -34,6 +35,7 @@ urlpatterns = [
     path('admin/', admin.site.urls), #http:127.0.0.1:8000/admin/
     path('', include('PC.urls')), #http:127.0.0.1:8000/PC/...
     #path('', index), #http:127.0.0.1:8000/
+    path('capcha/', include('captcha.urls')),
     ]
 
 if settings.DEBUG:
@@ -43,6 +45,7 @@ if settings.DEBUG:
         path('__debug__/', include(debug_toolbar.urls)),
     ] + urlpatterns
     urlpatterns += static(settings.MEDIA_URL, document_root= settings.MEDIA_ROOT)
+
 
 handler404 = pageNotFound
 # handler 404 - Page not found

@@ -11,14 +11,18 @@ menu = [{'title': "About Site", 'url_name': 'about'},
 
 
 class DataMixin:
-    paginate_by = 299
+    paginate_by = 3
     def get_user_context(self, **kwargs):
         context = kwargs
 
-        cats = cache.get('cats')
-        if not cats:
-            cats = Category.objects.all()
-            cache.set('cats', cats, 60)
+        cats = Category.objects.all()
+
+        # Here is an exemple of cache, it will save all objects in cache after that will use it for their need
+
+        # cats = cache.get('cats')
+        # if not cats:
+        #     cats = Category.objects.all()
+        #     cache.set('cats', cats, 60)
 
         user_menu = menu.copy()
         if not self.request.user.is_authenticated:
